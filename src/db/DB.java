@@ -11,27 +11,31 @@ import java.util.logging.Logger;
 
 public class DB {
 
+    private static Connection conn = null;
     private static final String DRIVER = "com.mysql.jdbc.Driver";
     private static final String URL = "jdbc:mysql://localhost:3306/coursejdbc";
     private static final String USER = "root";
     private static final String PASS = "Dann847949";
 
     public static Connection getConnection() {
-        try {
-            Class.forName(DRIVER);
-            return DriverManager.getConnection(URL, USER, PASS);
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new DbException(e.getMessage());
+        if (conn == null) {
+            try {
+                Class.forName(DRIVER);
+                DriverManager.getConnection(URL, USER, PASS);
+            } catch (ClassNotFoundException | SQLException e) {
+                throw new DbException(e.getMessage());
+            }
         }
+        return conn;
     }
 
     public static void closeConnection(Connection con) {
-        try {
-            if (con != null) {
-                con.close();
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                throw new DbException(e.getMessage());
             }
-        } catch (SQLException e) {
-            throw new DbException(e.getMessage());
         }
     }
 
